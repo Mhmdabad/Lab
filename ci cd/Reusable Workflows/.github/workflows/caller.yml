@@ -1,0 +1,17 @@
+name: Call Reusable Docker Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  call-reusable-workflow:
+    uses: ./.github/workflows/buildAndPublishDockerImage.yml
+    with:
+      image_name: 'my-app'
+      image_tag: '1.0.0'
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
