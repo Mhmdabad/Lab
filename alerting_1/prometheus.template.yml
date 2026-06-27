@@ -1,0 +1,42 @@
+# ============================================
+# Prometheus Configuration (Template)
+# ============================================
+# This file uses ${API_HOST} as a placeholder.
+# The init container replaces it with the real
+# value from .env before Prometheus starts.
+# ============================================
+
+global:
+  scrape_interval: 15s       # How often Prometheus scrapes targets
+  evaluation_interval: 15s   # How often Prometheus evaluates alert rules
+
+# ============================================
+# ALERTING: Tell Prometheus where Alertmanager lives
+# ============================================
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - "alertmanager:9093"
+
+# ============================================
+# ALERT RULES: Load rule files
+# ============================================
+rule_files:
+  - "alert_rules.yml"
+
+# ============================================
+# SCRAPE CONFIGS: Define what to monitor
+# ============================================
+scrape_configs:
+
+  # --- Job 1: Your Node.js backend API metrics ---
+  - job_name: "nodejs-app"
+    scheme: https
+    static_configs:
+      - targets: ["${API_HOST}"]
+
+  # --- Job 2: Node Exporter (server CPU, memory, disk) ---
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["${API_HOST}:9100"]

@@ -1,0 +1,105 @@
+# ============================================
+# Prometheus Alert Rules
+# ============================================
+# These rules define WHEN an alert should fire.
+# Prometheus evaluates these rules every
+# "evaluation_interval" (15s by default).
+#
+# Alert States:
+#   - Inactive: condition is NOT met
+#   - Pending:  condition IS met, but "for" duration has not passed yet
+#   - Firing:   condition has been met for the full "for" duration
+#               → Prometheus sends the alert to Alertmanager
+# ============================================
+
+groups:
+
+  # =============================================
+  # GROUP 1: Node Exporter (Server-Level) Alerts
+  # =============================================
+  - name: server_alerts
+    rules:
+
+      # --- Alert: High CPU Usage ---
+      # Fires when CPU idle time drops below 15% for 5 minutes
+      - alert: HighCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 85% for more than 5 minutes. Current value: {{ $value }}%"
+
+      # --- Alert: High Memory Usage ---
+      # Fires when available memory drops below 15% of total
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 85% for more than 5 minutes. Current value: {{ $value }}%"
+
+      # --- Alert: Disk Space Running Low ---
+      # Fires when root filesystem has less than 20% free space
+      - alert: DiskSpaceLow
+        expr: (1 - node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 > 80
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk space is running low on {{ $labels.instance }}"
+          description: "Root filesystem is more than 80% full. Current value: {{ $value }}%"
+
+      # --- Alert: Server Down ---
+      # Fires when node-exporter target is unreachable for 1 minute
+      - alert: ServerDown
+        expr: up{job="node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Server {{ $labels.instance }} is down"
+          description: "Node Exporter target has been unreachable for more than 1 minute."
+
+  # =============================================
+  # GROUP 2: Application (Node.js Backend) Alerts
+  # =============================================
+  - name: application_alerts
+    rules:
+
+      # --- Alert: API Down ---
+      # Fires when the nodejs-app target is unreachable for 1 minute
+      - alert: ApiDown
+        expr: up{job="nodejs-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API {{ $labels.instance }} is down"
+          description: "The Node.js API has been unreachable for more than 1 minute."
+
+      # --- Alert: High HTTP Error Rate ---
+      # Fires when more than 5% of HTTP responses are 5xx errors
+      # (Only works if your app exposes http_request_duration_seconds or similar)
+      - alert: HighHttpErrorRate
+        expr: sum(rate(http_request_duration_seconds_count{code=~"5.."}[5m])) / sum(rate(http_request_duration_seconds_count[5m])) * 100 > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High HTTP 5xx error rate"
+          description: "More than 5% of HTTP requests are returning 5xx errors. Current value: {{ $value }}%"
+
+      # --- Alert: Slow API Response Time ---
+      # Fires when average request latency exceeds 2 seconds
+      - alert: SlowApiResponse
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API response time is slow"
+          description: "95th percentile response time is above 2 seconds. Current value: {{ $value }}s"
