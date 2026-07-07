@@ -1,5 +1,6 @@
 # To-Do List
 
 ## DevOps
-- [ ] Golden Image
-- [ ] Terraform Vault
+- [ ] more about jenkins
+- [ ] HashiCorp Vault
+- [ ] ansible

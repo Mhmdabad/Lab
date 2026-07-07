@@ -1,0 +1,46 @@
+name: "CodeQL Advanced Security Scanning"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * 0' # Automatically runs every Sunday at midnight to check for newly discovered vulnerabilities
+
+jobs:
+  analyze:
+    name: Analyze Codebase
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write # Required to publish scanning results back to GitHub's UI
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript-typescript' ] # Supported: c-cpp, csharp, go, java-kotlin, python, ruby...
+
+    steps:
+      # Step 1: Check out code repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Initialize CodeQL tools and create the database framework
+      - name: Initialize CodeQL Engine
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # Optional: You can specify custom query packs or standard security suites here
+          queries: security-extended 
+
+      # Step 3: Automatically attempt to build code (Crucial for compiled languages, can be omitted for interpreted ones)
+      - name: Autobuild Project
+        uses: github/codeql-action/autobuild@v3
+
+      # Step 4: Run the analysis queries against the extracted database layout
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

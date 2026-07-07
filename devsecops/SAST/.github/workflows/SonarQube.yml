@@ -1,0 +1,42 @@
+name: Security & Quality Analysis (SonarQube)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonar-analysis:
+    name: Run Static Code Scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Pull down the full repository history
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Disables shallow clones so SonarQube can map code issues to specific Git commits
+
+      # Step 2: Initialize Node runtime environment
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Step 3: Run the official SonarQube scan engine
+      - name: Execute SonarQube Scanner
+        uses: sonarsource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # Step 4: Actively enforce your quality gates
+      - name: Verify Quality Gate Status
+        uses: sonarsource/sonarqube-quality-gate-action@v1
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
