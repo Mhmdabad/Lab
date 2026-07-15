@@ -1,0 +1,4 @@
+# vars.yml
+web_server: nginx
+homepage_content: "Hello from Ansible!"
+homepage_path: /var/www/html/index.html

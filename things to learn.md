@@ -4,3 +4,4 @@
 - [ ] more about jenkins
 - [ ] HashiCorp Vault
 - [ ] ansible
+- [ ] monitoring

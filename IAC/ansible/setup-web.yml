@@ -1,0 +1,23 @@
+# setup-web.yml
+- name: Set up our web servers
+  hosts: webservers
+  become: yes # run with admin (sudo) rights
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install the web server
+      apt:
+        name: "{{ web_server }}"
+        state: present # "present" = make sure it's installed
+
+    - name: Create a simple homepage
+      copy:
+        content: "{{ homepage_content }}"
+        dest: "{{ homepage_path }}"
+
+    - name: Make sure the web server is running
+      service:
+        name: "{{ web_server }}"
+        state: started
+        enabled: yes # also start it on every reboot
