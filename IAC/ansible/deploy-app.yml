@@ -1,0 +1,22 @@
+# deploy-app.yml - Example playbook using ansible-vault secrets
+- name: Deploy app with database credentials
+  hosts: webservers
+  become: yes
+  vars_files:
+    - vars.yml        # normal variables (not secret)
+    - secrets.yml     # encrypted with ansible-vault
+
+  tasks:
+    - name: Create database config file with credentials
+      copy:
+        content: |
+          DB_USER={{ db_user }}
+          DB_PASSWORD={{ db_password }}
+          API_KEY={{ api_key }}
+        dest: /etc/app/.env
+        mode: '0600'    # only root can read (secure permissions)
+
+    - name: Install the web server
+      apt:
+        name: "{{ web_server }}"
+        state: present
