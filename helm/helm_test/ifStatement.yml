@@ -1,0 +1,6 @@
+# loop over a list from values.yaml
+env:
+{{- range .Values.envVars }}
+- name: {{ .name }}
+value: {{ .value | quote }}
+{{- end }}
