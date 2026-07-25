@@ -1,0 +1,15 @@
+---
+# group_vars/all.yml — variables shared by ALL hosts.
+# Anything role- or host-specific can override these.
+
+site_name: "DevOps Roadmap — Stage 06"
+site_admin_email: "admin@example.com"
+
+# Which package provides the web server (differs per distro).
+web_package: nginx
+web_service: nginx
+web_root: /usr/share/nginx/html
+
+# Simple hardening toggles the role reads.
+harden_ssh: true
+disable_root_login: true

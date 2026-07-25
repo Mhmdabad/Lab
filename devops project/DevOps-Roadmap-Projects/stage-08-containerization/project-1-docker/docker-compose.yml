@@ -1,0 +1,30 @@
+# CONCEPT: multi-container orchestration on ONE host.
+# `docker compose up` starts the app + redis together on a shared network.
+
+services:
+  app:
+    build: . # build from the Dockerfile in this directory
+    image: devops-roadmap/docker-demo:latest
+    ports:
+      - "5000:5000" # host:container
+    environment:
+      REDIS_HOST: redis # matches the service name below (Docker DNS)
+      REDIS_PORT: "6379"
+    depends_on:
+      redis:
+        condition: service_healthy # wait until redis passes its healthcheck
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    # Persist data to a named volume so counts survive restarts.
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:

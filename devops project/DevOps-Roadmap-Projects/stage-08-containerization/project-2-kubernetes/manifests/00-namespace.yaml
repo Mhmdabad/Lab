@@ -1,0 +1,9 @@
+# CONCEPT: namespaces — isolate resources into logical groups.
+# Everything else in this project is pinned to this namespace.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: roadmap-demo
+  labels:
+    app.kubernetes.io/part-of: devops-roadmap
+    environment: demo

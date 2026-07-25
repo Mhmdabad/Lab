@@ -1,0 +1,12 @@
+apiVersion: v2
+name: webapp
+description: A reusable Helm chart for the DevOps roadmap (Stage 08, Project 3)
+type: application
+
+# version = the chart's own version. appVersion = the app it deploys.
+version: 0.1.0
+appVersion: "stable-alpine"
+
+keywords: [devops, roadmap, learning, helm]
+maintainers:
+  - name: DevOps Roadmap Learner

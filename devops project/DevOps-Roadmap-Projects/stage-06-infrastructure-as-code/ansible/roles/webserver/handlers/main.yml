@@ -1,0 +1,12 @@
+---
+# Handlers run once at the end of a play, and only if 'notify'd by a changed task.
+
+- name: Restart web server
+  ansible.builtin.service:
+    name: "{{ web_service }}"
+    state: restarted
+
+- name: Restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted

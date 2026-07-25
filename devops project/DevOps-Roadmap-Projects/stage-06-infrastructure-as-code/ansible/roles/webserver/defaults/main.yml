@@ -1,0 +1,4 @@
+---
+# Role default variables (lowest precedence — easily overridden).
+page_title: "It works!"
+page_heading: "Configured by Ansible"

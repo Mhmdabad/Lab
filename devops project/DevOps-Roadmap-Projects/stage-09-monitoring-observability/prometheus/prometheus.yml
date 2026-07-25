@@ -1,0 +1,15 @@
+# Prometheus config — what to scrape and how often.
+global:
+  scrape_interval: 5s # pull metrics every 5s (short, for a demo)
+  evaluation_interval: 5s
+
+scrape_configs:
+  # Scrape our instrumented app's /metrics endpoint.
+  - job_name: observability-demo
+    static_configs:
+      - targets: ["app:8000"]
+
+  # Prometheus scraping itself (handy sanity check).
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

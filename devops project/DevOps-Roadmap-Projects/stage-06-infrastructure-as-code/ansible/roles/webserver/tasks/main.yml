@@ -1,0 +1,33 @@
+---
+# roles/webserver/tasks/main.yml — the work the role does.
+# Idempotent: running it twice makes no changes the second time.
+
+- name: Install the web server package
+  ansible.builtin.package:
+    name: "{{ web_package }}"
+    state: present
+
+- name: Ensure the web service is started and enabled at boot
+  ansible.builtin.service:
+    name: "{{ web_service }}"
+    state: started
+    enabled: true
+
+- name: Deploy the index page from a template
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: "{{ web_root }}/index.html"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart web server # triggers the handler only if the file changed
+
+# --- Simple SSH hardening, gated behind variables from group_vars/all.yml ---
+- name: Harden SSH — disable root login
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin no"
+    validate: "sshd -t -f %s"
+  when: harden_ssh and disable_root_login
+  notify: Restart sshd

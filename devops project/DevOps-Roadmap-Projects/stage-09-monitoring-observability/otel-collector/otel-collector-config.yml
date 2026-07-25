@@ -1,0 +1,29 @@
+# OpenTelemetry Collector — the vendor-neutral pipeline the app sends traces to.
+# receivers -> processors -> exporters. Here: receive OTLP, batch, export to Tempo.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch: {}
+
+exporters:
+  # Forward traces to Tempo over OTLP.
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+  # Also log a summary to the collector's own stdout (handy for debugging).
+  debug:
+    verbosity: normal
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/tempo, debug]

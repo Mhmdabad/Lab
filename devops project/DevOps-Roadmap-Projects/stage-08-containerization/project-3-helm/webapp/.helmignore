@@ -1,0 +1,6 @@
+# Patterns to exclude when packaging the chart (helm package).
+.DS_Store
+.git/
+*.tmp
+*.bak
+.vscode/

@@ -1,0 +1,81 @@
+# GitLab CI implementation of the SAME pipeline.
+#
+# To activate: copy this file to `.gitlab-ci.yml` at your REPO ROOT and push to
+# a GitLab project. GitLab spins up runners automatically on GitLab.com.
+#
+# Same 7 stages as the GitHub Actions and Jenkins versions:
+#   secrets -> sast -> deps -> test -> build -> image-scan -> deploy
+
+stages:
+  - secrets
+  - sast
+  - deps
+  - test
+  - build
+  - image-scan
+  - deploy
+
+variables:
+  APP_DIR: stage-07-cicd-pipelines/app
+  IMAGE: "$CI_REGISTRY_IMAGE/stage07:$CI_COMMIT_SHORT_SHA"
+
+# ---- 1. SECRETS ------------------------------------------------------------
+gitleaks:
+  stage: secrets
+  image: zricethezav/gitleaks:latest
+  script:
+    - gitleaks detect --source . --no-banner --verbose
+
+# ---- 2. SAST ---------------------------------------------------------------
+semgrep:
+  stage: sast
+  image: returntocorp/semgrep:latest
+  script:
+    - semgrep ci --config p/ci
+
+# ---- 3. DEPS ---------------------------------------------------------------
+trivy-deps:
+  stage: deps
+  image: aquasec/trivy:latest
+  script:
+    - trivy fs --severity HIGH,CRITICAL --exit-code 1 "$APP_DIR"
+
+# ---- 4. TEST ---------------------------------------------------------------
+pytest:
+  stage: test
+  image: python:3.12-slim
+  script:
+    - pip install -r "$APP_DIR/requirements.txt"
+    - cd "$APP_DIR" && python -m pytest -v
+
+# ---- 5. BUILD --------------------------------------------------------------
+# docker:dind gives us a Docker daemon inside the job.
+build-image:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  script:
+    - docker build -t "$IMAGE" "$APP_DIR"
+    - docker save "$IMAGE" -o image.tar # pass to next stage as an artifact
+  artifacts:
+    paths: [image.tar]
+    expire_in: 1 hour
+
+# ---- 6. IMAGE-SCAN ---------------------------------------------------------
+trivy-image:
+  stage: image-scan
+  image: aquasec/trivy:latest
+  script:
+    - trivy image --input image.tar --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+
+# ---- 7. DEPLOY (manual gate, main only) ------------------------------------
+deploy:
+  stage: deploy
+  image: alpine:3.20
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual # click "play" in the GitLab UI to deploy
+  script:
+    - echo "All gates green. Deploying $IMAGE ..."
+    - echo "Real deploy would push the image and run kubectl/helm."

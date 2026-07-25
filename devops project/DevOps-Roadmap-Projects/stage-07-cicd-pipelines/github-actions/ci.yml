@@ -1,0 +1,97 @@
+# GitHub Actions implementation of the shared pipeline.
+#
+# To activate: copy this file to `.github/workflows/ci.yml` at your REPO ROOT
+# (GitHub only runs workflows from that path). Then push.
+#
+# Pipeline (identical across GitHub Actions / GitLab CI / Jenkins):
+#   secrets -> sast -> deps -> test -> build -> image-scan -> deploy
+# Security stages come from the DevSecOps roadmap:
+#   Gitleaks (secrets) -> Semgrep (SAST) -> Trivy (deps + image)
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Everything below assumes the app lives in stage-07-cicd-pipelines/app.
+env:
+  APP_DIR: stage-07-cicd-pipelines/app
+  IMAGE: devops-roadmap/stage07:${{ github.sha }}
+
+jobs:
+  # ---- 1. SECRETS: fail if an API key / password was committed -------------
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 } # gitleaks needs full history
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
+
+  # ---- 2. SAST: static analysis of our source ------------------------------
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep SAST
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/ci # Semgrep's curated CI ruleset
+
+  # ---- 3. DEPS: scan Python deps for known CVEs ----------------------------
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy dependency (filesystem) scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: ${{ env.APP_DIR }}
+          severity: HIGH,CRITICAL # fail thresholds — the roadmap's advice
+          exit-code: "1"
+
+  # ---- 4. TEST: unit tests (Build -> Test -> Deploy) -----------------------
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Install deps and run pytest
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          pip install -r requirements.txt
+          python -m pytest -v
+
+  # ---- 5. BUILD + 6. IMAGE-SCAN: build then scan the image -----------------
+  build:
+    needs: [secrets, sast, deps, test] # only build if all gates passed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t "$IMAGE" "$APP_DIR"
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.IMAGE }}
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true # don't block on CVEs with no fix yet
+
+  # ---- 7. DEPLOY: only on main, only after everything is green -------------
+  deploy:
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production # enables required-reviewer approval gates
+    steps:
+      - name: Deploy (placeholder)
+        run: |
+          echo "All gates green. Deploying $IMAGE ..."
+          echo "Real deploy would: docker push, then kubectl/helm rollout."

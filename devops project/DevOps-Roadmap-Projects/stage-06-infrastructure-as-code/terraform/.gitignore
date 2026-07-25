@@ -1,0 +1,10 @@
+# Terraform — never commit these
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars          # real values (keep .tfvars.example)
+!*.tfvars.example
+.web_ip.txt
+override.tf
+.terraform.lock.hcl

@@ -1,0 +1,9 @@
+# CONCEPT: ConfigMap — non-secret configuration, injected as env vars.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+  namespace: roadmap-demo
+data:
+  APP_GREETING: "Hello from Kubernetes!"
+  APP_ENV: "demo"

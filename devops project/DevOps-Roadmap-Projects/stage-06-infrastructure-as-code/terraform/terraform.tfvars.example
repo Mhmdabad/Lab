@@ -1,0 +1,13 @@
+# Copy this file to `terraform.tfvars` and edit the values.
+# terraform.tfvars is gitignored so your real values never get committed.
+
+aws_region       = "us-east-1"
+environment      = "dev"
+instance_type    = "t3.micro"
+
+# Lock SSH to YOUR public IP. Find it: curl ifconfig.me   → then append /32
+allowed_ssh_cidr = "198.51.100.42/32"
+
+# Paste the CONTENTS of your public key (cat ~/.ssh/id_rsa.pub).
+# Leave empty ("") to skip creating a key pair.
+ssh_public_key   = ""

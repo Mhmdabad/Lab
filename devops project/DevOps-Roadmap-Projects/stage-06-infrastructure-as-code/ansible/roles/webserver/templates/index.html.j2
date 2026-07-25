@@ -1,0 +1,14 @@
+<!doctype html>
+<!-- A Jinja2 template. {{ }} placeholders are filled in per-host at deploy time. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ page_title }}</title>
+  </head>
+  <body>
+    <h1>{{ page_heading }}</h1>
+    <p>Host: <strong>{{ inventory_hostname }}</strong></p>
+    <p>Site: {{ site_name }}</p>
+    <p>Managed by Ansible — do not edit by hand.</p>
+  </body>
+</html>

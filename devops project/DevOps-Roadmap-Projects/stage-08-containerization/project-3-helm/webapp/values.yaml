@@ -1,0 +1,60 @@
+# values.yaml — the DEFAULT configuration. Everything templated below reads
+# from here. Override per-environment with `-f values-prod.yaml` or `--set`.
+
+replicaCount: 3
+
+image:
+  repository: nginxinc/nginx-unprivileged
+  tag: stable-alpine
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: nginx
+  host: webapp.local
+  path: /
+  pathType: Prefix
+
+# Non-secret config injected as env vars (rendered into a ConfigMap).
+config:
+  APP_GREETING: "Hello from Helm!"
+  APP_ENV: "demo"
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Security defaults — same hardening as the raw-manifests project.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]

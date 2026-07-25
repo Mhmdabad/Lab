@@ -1,0 +1,28 @@
+# Example environment override. Apply with:
+#   helm upgrade --install webapp ./webapp -f values-prod.yaml
+#
+# Only the values that DIFFER from webapp/values.yaml need to appear here —
+# that's the whole point of Helm: one chart, many environments.
+
+replicaCount: 5
+
+ingress:
+  enabled: true
+  host: webapp.example.com
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 20
+
+config:
+  APP_ENV: "production"
+  APP_GREETING: "Hello from Helm (prod)!"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi

@@ -1,0 +1,15 @@
+# CONCEPT: Service — a stable virtual IP + DNS name that load-balances across
+# the (ephemeral, changing) Pods selected by the label.
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: roadmap-demo
+spec:
+  type: ClusterIP # internal-only; use `kubectl port-forward` to reach it
+  selector:
+    app.kubernetes.io/name: web # matches the Pod labels in the Deployment
+  ports:
+    - name: http
+      port: 80 # the Service port
+      targetPort: http # the container port (named "http" = 8080)

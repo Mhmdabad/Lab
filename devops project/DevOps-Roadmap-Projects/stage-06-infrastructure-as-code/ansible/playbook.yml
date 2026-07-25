@@ -1,0 +1,24 @@
+---
+# playbook.yml — the top-level play.
+#
+# A "play" maps a group of hosts to a list of roles/tasks. This one targets the
+# webservers group and applies the reusable `webserver` role to every host.
+
+- name: Configure all web servers
+  hosts: webservers
+  become: true # run as root (sudo)
+
+  # Roles keep playbooks tidy and reusable. See roles/webserver/.
+  roles:
+    - webserver
+
+  # A couple of inline tasks to show tasks vs roles and the 'when' conditional.
+  tasks:
+    - name: Ensure the server timezone is UTC
+      community.general.timezone:
+        name: UTC
+      ignore_errors: true # module may be absent in minimal labs
+
+    - name: Print a friendly summary
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} configured as a {{ web_package }} web server for '{{ site_name }}'"

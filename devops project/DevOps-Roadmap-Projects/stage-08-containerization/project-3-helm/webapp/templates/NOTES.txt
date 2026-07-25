@@ -1,0 +1,18 @@
+Thanks for installing {{ .Chart.Name }} (release: {{ .Release.Name }}).
+
+Your app is running with {{ .Values.replicaCount }} replica(s) of
+{{ .Values.image.repository }}:{{ .Values.image.tag }}.
+
+To reach it:
+{{- if .Values.ingress.enabled }}
+  Add "{{ .Values.ingress.host }}" to your hosts file (-> 127.0.0.1), then open:
+    http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+{{- else }}
+  The Service is {{ .Values.service.type }} (internal). Port-forward it:
+    kubectl port-forward svc/{{ include "webapp.fullname" . }} 8080:{{ .Values.service.port }}
+    open http://localhost:8080
+{{- end }}
+
+Check status:
+  helm status {{ .Release.Name }}
+  kubectl get all -l app.kubernetes.io/instance={{ .Release.Name }}
