@@ -1,0 +1,49 @@
+---
+- name: Configure Production Web Servers
+  hosts: webservers
+  become: true # Run commands with sudo
+
+  vars:
+    app_port: 80
+    app_dir: /var/www/my-app
+
+  tasks:
+    # Task 1: Package Management Module (apt/dnf)
+    - name: Install Nginx web server
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    # Task 2: Directory Management Module
+    - name: Ensure app root directory exists
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: "0755"
+
+    # Task 3: File Copy/Template Module
+    - name: Deploy custom Nginx config
+      ansible.builtin.copy:
+        src: ./files/nginx.conf
+        dest: /etc/nginx/sites-available/default
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart Nginx Service # Only fires if config changed!
+
+    # Task 4: Service Management Module
+    - name: Ensure Nginx is running and enabled at boot
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  # Handlers run at the END of the play only if notified
+  handlers:
+    - name: Restart Nginx Service
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

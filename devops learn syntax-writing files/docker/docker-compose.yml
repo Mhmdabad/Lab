@@ -1,0 +1,22 @@
+services:
+  db:   
+    image: postgres:15-alpine #calling this image from docker hub
+    restart: always
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpassword
+
+  backend:
+    build:
+      context: ./desktop/shadoom/backend
+      dockerfile: dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=db   # Service name acts as DNS hostname!
+      - DB_USER=admin
+      - DB_PASSWORD=secretpassword
+    depends_on:
+      - db

@@ -1,0 +1,24 @@
+# Step 1: Base Image
+FROM node:20-alpine
+
+# Step 2: Set Working Directory
+WORKDIR /app
+
+# Step 3: Copy ONLY dependency manifests first (for caching)
+COPY package*.json ./
+
+# Step 4: Install dependencies
+RUN npm ci --only=production
+
+# Step 5: Copy application source code (changes frequently)
+COPY . .
+
+# Step 6: Set environment & port documentation
+ENV NODE_ENV=production
+EXPOSE 3000
+
+# Step 7: Drop root permissions for security
+USER node
+
+# Step 8: Startup command (Exec form)
+CMD ["node", "src/server.js"]

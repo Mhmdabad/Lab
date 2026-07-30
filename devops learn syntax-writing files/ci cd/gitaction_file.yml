@@ -1,0 +1,172 @@
+name: CI/CD DevSecOps Pipeline to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:        # manual runs; also gates the manual DAST job
+
+env:
+  REGISTRY_HOST: registry.digitalocean.com
+  REGISTRY_NAME: shadoom-image
+  IMAGE_NAME: shadoom-image
+  DROPLET_IP: "164.92.239.226"
+  IMAGE_TAG: registry.digitalocean.com/shadoom-image/shadoom-image:latest
+
+jobs:
+  # ── Security: secret scanning (full history) ─────────────────────────────
+  secret_scanning:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        run: docker run --rm -v "${{ github.workspace }}:/repo" zricethezav/gitleaks:latest detect --source=/repo --verbose
+
+  # ── Security: dependency (SCA) + IaC misconfig ───────────────────────────
+  dependency_sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Trivy FS (report LOW/MEDIUM/HIGH)
+        run: docker run --rm -v "${{ github.workspace }}:/src" aquasec/trivy:latest fs --severity LOW,MEDIUM,HIGH --exit-code 0 /src
+      - name: Trivy FS (gate on CRITICAL)
+        run: docker run --rm -v "${{ github.workspace }}:/src" aquasec/trivy:latest fs --severity CRITICAL --exit-code 1 /src
+      - name: Trivy config / IaC (report)
+        run: docker run --rm -v "${{ github.workspace }}:/src" aquasec/trivy:latest config --exit-code 0 /src
+      - name: Trivy config / IaC (gate on CRITICAL)
+        run: docker run --rm -v "${{ github.workspace }}:/src" aquasec/trivy:latest config --severity CRITICAL --exit-code 1 /src
+
+  # ── Security: SAST (report-only until baseline triaged) ──────────────────
+  # '|| true' keeps this green while printing findings. To ENFORCE it (fail the
+  # run on an ERROR-level finding), remove the '|| true' at the end.
+  sast_semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Semgrep
+        run: docker run --rm -w /src -v "${{ github.workspace }}:/src" semgrep/semgrep:latest semgrep scan --config=p/security-audit --config=p/javascript --config=p/nodejsscan --exclude=node_modules --error --severity=ERROR || true
+
+  # ── Test gate ────────────────────────────────────────────────────────────
+  unit_tests:
+    runs-on: ubuntu-latest
+    needs: [secret_scanning, dependency_sca]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+
+  # ── Build, scan image, sign, push ────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    needs: [unit_tests]
+    # Exposed so the Cosign steps below can self-enable only once the key
+    # secret exists (secrets can't be referenced directly in `if:`).
+    env:
+      COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+      - name: Log in to DO registry
+        run: doctl registry login --expiry-seconds 1200
+      - name: Build image
+        run: docker build -t "$IMAGE_TAG" .
+      - name: Scan image (gate on CRITICAL)
+        run: |
+          docker save "$IMAGE_TAG" -o image.tar
+          docker run --rm -v "${{ github.workspace }}/image.tar:/image.tar" aquasec/trivy:latest image --input /image.tar --severity CRITICAL --exit-code 1 --ignore-unfixed
+      - name: Push image
+        id: push
+        run: |
+          docker push "$IMAGE_TAG"
+          # Cosign signs by immutable digest, not the mutable :latest tag
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_TAG")
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+
+      # ── Image signing (Cosign / Sigstore) ──────────────────────────────
+      # Dormant until you add the COSIGN_PRIVATE_KEY secret + commit cosign.pub.
+      - name: Install Cosign
+        if: ${{ env.COSIGN_PRIVATE_KEY != '' }}
+        uses: sigstore/cosign-installer@v3
+      - name: Sign image
+        if: ${{ env.COSIGN_PRIVATE_KEY != '' }}
+        env:
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${{ steps.push.outputs.digest }}"
+      - name: Verify signature (proves it worked)
+        if: ${{ env.COSIGN_PRIVATE_KEY != '' }}
+        run: cosign verify --key cosign.pub "${{ steps.push.outputs.digest }}"
+
+  # ── Deploy: ship env file + redeploy container over SSH ──────────────────
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Write env file
+        run: printf '%s\n' "$ENV_FILE" > env.shadoom
+        env:
+          ENV_FILE: ${{ secrets.SHADOOM_PROD_ENV }}
+      - name: Copy env and redeploy
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          DO_TOKEN: ${{ secrets.DO_TOKEN }}
+        run: |
+          # Load the key via ssh-agent (mirrors the working GitLab deploy):
+          # strip CRs and guarantee a trailing newline so OpenSSH accepts it.
+          eval "$(ssh-agent -s)"
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' | ssh-add -
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          ssh-keyscan -H "$DROPLET_IP" >> ~/.ssh/known_hosts
+          scp -o StrictHostKeyChecking=no env.shadoom root@"$DROPLET_IP":/root/.env.shadoom
+          ssh -o StrictHostKeyChecking=no root@"$DROPLET_IP" "
+            echo '$DO_TOKEN' | docker login -u eraseandreplace --password-stdin $REGISTRY_HOST
+            docker stop shadoom-app || true
+            docker rm shadoom-app || true
+            docker pull $IMAGE_TAG
+            docker run -d \
+              --name shadoom-app \
+              --restart always \
+              -p 3000:8080 \
+              --env-file /root/.env.shadoom \
+              -e PORT=8080 \
+              -e NODE_ENV=production \
+              $IMAGE_TAG
+          "
+
+  # ── Trigger Render frontend redeploy ─────────────────────────────────────
+  trigger_frontend:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    steps:
+      - name: Trigger Render
+        run: curl -X POST "${{ secrets.RENDER_HOOK }}"
+
+  # ── Reclaim DigitalOcean registry space ──────────────────────────────────
+  # Runs after build regardless of whether deploy succeeded, so orphaned
+  # manifests are cleared every run and the free-tier quota never deadlocks
+  # the next push.
+  registry_cleanup:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: ${{ always() }}
+    steps:
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+      - name: Garbage-collect untagged manifests
+        run: doctl registry garbage-collection start --include-untagged-manifests --force || echo "GC already running or nothing to clean"
+
+  # ── DAST — manual OWASP ZAP baseline against the live app ─────────────────
+  dast_zap:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: github.event_name == 'workflow_dispatch'
+    continue-on-error: true
+    steps:
+      - name: OWASP ZAP baseline
+        run: docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://api.shadoom.social -I || true
