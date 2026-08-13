@@ -1,20 +1,21 @@
 global:
-  scrape_interval: 15s     # How frequently to scrape targets
-  evaluation_interval: 15s # How frequently to evaluate rules
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
-  # 1. Prometheus monitoring its own app health
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
-  # 2. Node Exporter monitoring your server hardware (CPU/RAM/Disk)
-  - job_name: 'node_exporter'
+  - job_name: 'droplet_node_exporter'
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['${DROPLET_IP}:9100']
 
-  # 3. Your Backend Application metrics
   - job_name: 'shadoom_backend'
-    metrics_path: '/metrics' # Explicit path (default is /metrics, shown for clarity)
+    scheme: https
+    metrics_path: '/metrics'
+    basic_auth:
+      username: '${METRICS_USER}'
+      password: '${METRICS_PASSWORD}'
     static_configs:
-      - targets: ['localhost:5555']
+      - targets: ['${METRICS_DOMAIN}']

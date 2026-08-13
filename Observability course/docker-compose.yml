@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    env_file:
+      - .env
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        # Substitute variables from prometheus.yml.raw into prometheus.yml
+        envsubst '${DROPLET_IP} ${METRICS_DOMAIN} ${METRICS_USER} ${METRICS_PASSWORD}' < /etc/prometheus/prometheus.yml.raw > /etc/prometheus/prometheus.yml
+        # Start Prometheus using the rendered config
+        exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml.raw:ro
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus_data:
+  grafana_data:

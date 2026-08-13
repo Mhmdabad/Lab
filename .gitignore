@@ -1,4 +1,5 @@
 # Ignore environment variables and secrets
 .env
 *.env
-alerting/.env
+*/.env
+.env.*
