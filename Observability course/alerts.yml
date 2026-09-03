@@ -1,0 +1,111 @@
+groups:
+
+  # =========================
+  # Application alerts
+  # =========================
+
+  - name: application-alerts
+
+    rules:
+
+      - alert: NodeAppDown
+
+        expr: up{job="node-app"} == 0
+
+        for: 1m
+
+        labels:
+          severity: critical
+
+        annotations:
+          summary: "Node.js application is down"
+
+          description: >
+            Prometheus has been unable to scrape
+            the Node.js application for 1 minute.
+
+
+      - alert: TooManyHTTP500Errors
+
+        expr: increase(http_requests_total{status_code="500"}[5m]) > 5
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "Too many HTTP 500 errors"
+
+          description: >
+            More than 5 HTTP 500 responses occurred
+            during the last 5 minutes.
+
+
+  # =========================
+  # Machine alerts
+  # =========================
+
+  - name: machine-alerts
+
+    rules:
+
+      - alert: NodeExporterDown
+
+        expr: up{job="node-exporter"} == 0
+
+        for: 1m
+
+        labels:
+          severity: critical
+
+        annotations:
+          summary: "Node Exporter is down"
+
+          description: >
+            Prometheus cannot scrape Node Exporter.
+
+
+      - alert: HighCPUUsage
+
+        expr: >
+          100 *
+          (
+            1 -
+            avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))
+          ) > 80
+
+        for: 5m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "High CPU usage"
+
+          description: >
+            CPU usage has been above 80%
+            for 5 minutes.
+
+
+      - alert: HighMemoryUsage
+
+        expr: >
+          (
+            1 -
+            (
+              node_memory_MemAvailable_bytes
+              /
+              node_memory_MemTotal_bytes
+            )
+          ) * 100 > 80
+
+        for: 5m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "High memory usage"
+
+          description: >
+            Memory usage has been above 80%
+            for 5 minutes.

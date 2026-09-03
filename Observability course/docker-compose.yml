@@ -1,39 +1,87 @@
-version: '3.8'
-
 services:
+
+  node-app:
+    build:
+      context: "./server for metrics"
+      dockerfile: Dockerfile
+
+    container_name: node-app
+
+    ports:
+      - "3000:3000"
+
+    restart: unless-stopped
+
+
   prometheus:
     image: prom/prometheus:latest
+
     container_name: prometheus
-    restart: unless-stopped
-    env_file:
-      - .env
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        # Substitute variables from prometheus.yml.raw into prometheus.yml
-        envsubst '${DROPLET_IP} ${METRICS_DOMAIN} ${METRICS_USER} ${METRICS_PASSWORD}' < /etc/prometheus/prometheus.yml.raw > /etc/prometheus/prometheus.yml
-        # Start Prometheus using the rendered config
-        exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries
+
     ports:
       - "9090:9090"
+
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml.raw:ro
-      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+
+    depends_on:
+      - node-app
+      - alertmanager
+      - node-exporter
+
+    restart: unless-stopped
+
+
+  alertmanager:
+    image: prom/alertmanager:latest
+
+    container_name: alertmanager
+
+    ports:
+      - "9093:9093"
+
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+
+    restart: unless-stopped
+
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+
+    container_name: node-exporter
+
+    ports:
+      - "9100:9100"
+
+    volumes:
+      - /:/host:ro
+
+    command:
+      - "--path.rootfs=/host"
+
+    restart: unless-stopped
+
 
   grafana:
     image: grafana/grafana:latest
+
     container_name: grafana
-    restart: unless-stopped
+
     ports:
-      - "3000:3000"
+      - "3001:3000"
+
     volumes:
-      - grafana_data:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - grafana-data:/var/lib/grafana
+
     depends_on:
       - prometheus
 
+    restart: unless-stopped
+
+
 volumes:
-  prometheus_data:
-  grafana_data:
+  prometheus-data:
+  grafana-data:

@@ -1,0 +1,17 @@
+route:
+  receiver: "node-webhook"
+
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 1h
+
+
+receivers:
+
+  - name: "node-webhook"
+
+    webhook_configs:
+
+      - url: "http://node-app:3000/alerts"
+
+        send_resolved: true
