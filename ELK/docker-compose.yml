@@ -1,0 +1,59 @@
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.5.2
+    container_name: elasticsearch
+
+    ports:
+      - "9200:9200"
+
+    environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+    restart: unless-stopped
+
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.5.2
+    container_name: kibana
+
+    ports:
+      - "5601:5601"
+
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=1024
+
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+
+    depends_on:
+      - elasticsearch
+
+    restart: unless-stopped
+
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:9.5.2
+    container_name: logstash
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+
+    depends_on:
+      - elasticsearch
+
+    restart: unless-stopped
+
+
+volumes:
+  elasticsearch-data:
