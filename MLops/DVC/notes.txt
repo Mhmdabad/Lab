@@ -1,0 +1,4 @@
+first we run dvc init to init dvc
+then dvc add "the data file path"
+then connect the dvc to cloud storage: dvc remote add -d myremote bucket_url
+then run dvc push to push the data to the cloud storage
