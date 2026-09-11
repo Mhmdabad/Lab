@@ -1,0 +1,30 @@
+backendStore:
+  databaseMigration: true
+
+  postgres:
+    enabled: true
+    host: "mlops-practice-db.cej2omkmuzz1.us-east-1.rds.amazonaws.com"
+    port: 5432
+    database: "mlflow"
+
+  existingDatabaseSecret:
+    name: "mlflow-db-secret"
+    usernameKey: "username"
+    passwordKey: "password"
+
+
+artifactRoot:
+  proxiedArtifactStorage: true
+
+  s3:
+    enabled: true
+    bucket: "mlops-practice-artifacts-5548d72d2684bd301b559868fb"
+
+    existingSecret:
+      name: "mlflow-aws-secret"
+      keyOfAccessKeyId: "AWS_ACCESS_KEY_ID"
+      keyOfSecretAccessKey: "AWS_SECRET_ACCESS_KEY"
+
+
+extraEnvVars:
+  AWS_DEFAULT_REGION: "us-east-1"
