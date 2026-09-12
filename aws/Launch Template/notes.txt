@@ -1,0 +1,3 @@
+A Launch Template is a reusable blueprint that tells AWS how to create a new EC2 instance.
+Auto Scaling Group can use that template whenever it needs to create more EC2 instances
+we prepare .sh file that describes how the machine/instance should be configured
