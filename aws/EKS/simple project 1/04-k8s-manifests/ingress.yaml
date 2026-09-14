@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: intent-classifier-ingress
+  namespace: intent-namespace
+  annotations:
+    kubernetes.io/ingress.class: traefik
+
+spec:
+  ingressClassName: traefik
+
+  rules:
+    - host: a1df3cd48a5214caba8b413b1f29d019-1528248705.us-east-1.elb.amazonaws.com
+      http:
+        paths:
+          - path: /predict
+            pathType: Prefix
+            backend:
+              service:
+                name: intent-classifier
+                port:
+                  number: 80
