@@ -1,0 +1,9 @@
+python generate_data.py 
+python train.py
+
+now we configure dvc:
+dvc init
+dvc remote add -d myremote s3://my-bucket/churn-model
+dvc add models/churn_model.pkl
+dvc push
+

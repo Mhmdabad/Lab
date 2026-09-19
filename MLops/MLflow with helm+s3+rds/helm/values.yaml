@@ -3,7 +3,7 @@ backendStore:
 
   postgres:
     enabled: true
-    host: "mlops-practice-db.cej2omkmuzz1.us-east-1.rds.amazonaws.com"
+    host: "mlflow-db.example.invalid"
     port: 5432
     database: "mlflow"
 
@@ -18,7 +18,7 @@ artifactRoot:
 
   s3:
     enabled: true
-    bucket: "mlops-practice-artifacts-5548d72d2684bd301b559868fb"
+    bucket: "your-mlflow-artifacts-bucket"
 
     existingSecret:
       name: "mlflow-aws-secret"

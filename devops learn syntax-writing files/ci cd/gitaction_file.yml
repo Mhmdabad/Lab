@@ -7,10 +7,10 @@ on:
 
 env:
   REGISTRY_HOST: registry.digitalocean.com
-  REGISTRY_NAME: shadoom-image
-  IMAGE_NAME: shadoom-image
-  DROPLET_IP: "164.92.239.226"
-  IMAGE_TAG: registry.digitalocean.com/shadoom-image/shadoom-image:latest
+  REGISTRY_NAME: your-registry
+  IMAGE_NAME: your-image
+  DROPLET_IP: "203.0.113.10"
+  IMAGE_TAG: registry.digitalocean.com/your-registry/your-image:latest
 
 jobs:
   # ── Security: secret scanning (full history) ─────────────────────────────
@@ -124,7 +124,7 @@ jobs:
           ssh-keyscan -H "$DROPLET_IP" >> ~/.ssh/known_hosts
           scp -o StrictHostKeyChecking=no env.shadoom root@"$DROPLET_IP":/root/.env.shadoom
           ssh -o StrictHostKeyChecking=no root@"$DROPLET_IP" "
-            echo '$DO_TOKEN' | docker login -u eraseandreplace --password-stdin $REGISTRY_HOST
+            echo '$DO_TOKEN' | docker login -u your-registry-username --password-stdin $REGISTRY_HOST
             docker stop shadoom-app || true
             docker rm shadoom-app || true
             docker pull $IMAGE_TAG
@@ -169,4 +169,4 @@ jobs:
     continue-on-error: true
     steps:
       - name: OWASP ZAP baseline
-        run: docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://api.shadoom.social -I || true
+        run: docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://api.example.invalid -I || true
