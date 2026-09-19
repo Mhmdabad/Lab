@@ -1,0 +1,8 @@
+creating pod:
+kubectl run nginx --image=nginx     would create the pod in the cluster
+kubectl run nginx --image=nginx --dry-run=client -o yaml > pod.yaml   would create only the file
+
+creating service:
+1- kubectl expose pod nginx --name=nginx-service --port=80 --target-port=80 --type=ClusterIP --dry-run=client -o yaml > CluserIP.yaml
+2-kubectl create service clusterip nginx-service --tcp=80:80 --dry-run=client -o yaml > CluserIP.yaml
+

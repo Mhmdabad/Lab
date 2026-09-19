@@ -1,0 +1,2 @@
+we need to put the k8s yml files in a git repo
+then we connect this git repo to argo
