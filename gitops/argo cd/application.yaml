@@ -9,9 +9,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/Mhmdabad/argocd-demo
+    repoURL: https://github.com/Mhmdabad/Lab
     targetRevision: main
-    path: kubernetes
+    path: "gitops/argo cd/k8s"
 
   destination:
     server: https://kubernetes.default.svc
