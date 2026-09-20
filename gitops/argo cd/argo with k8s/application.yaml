@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/Mhmdabad/Lab.git
     targetRevision: main
-    path: "gitops/argo cd/k8s"
+    path: "gitops/argo cd/argo with k8s/k8s"
 
   destination:
     server: https://kubernetes.default.svc

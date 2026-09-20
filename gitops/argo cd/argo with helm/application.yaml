@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: helm-demo
+  namespace: argocd
+
+spec:
+  project: helm-project
+
+  source:
+    repoURL: https://github.com/Mhmdabad/Lab.git
+    targetRevision: main
+    path: "gitops/argo cd/argo with helm/helm"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: helm-app
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: helm-project
+  namespace: argocd
+
+spec:
+  sourceRepos:
+    - https://github.com/Mhmdabad/Lab.git
+
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: helm-app
+
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

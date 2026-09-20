@@ -10,3 +10,9 @@ kubectl apply -f project.yaml
 kubectl apply -f application.yaml
 (so fisrt we apply the project,then apply the aplications of this project)
 
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d
+echo
+
