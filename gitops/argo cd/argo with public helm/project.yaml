@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: public-helm-project
+  namespace: argocd
+
+spec:
+  sourceRepos:
+    - https://stefanprodan.github.io/podinfo
+
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: public-helm
+
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
