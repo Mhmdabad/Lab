@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: nginx-project
+  namespace: argocd
+
+spec:
+  description: Project for the nginx demo
+
+  sourceRepos:
+    - https://github.com/Mhmdabad/Lab.git
+
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: nginx

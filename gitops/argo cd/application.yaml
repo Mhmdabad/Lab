@@ -6,18 +6,21 @@ metadata:
   namespace: argocd
 
 spec:
-  project: default
+  project: nginx-project
 
   source:
-    repoURL: https://github.com/Mhmdabad/Lab
+    repoURL: https://github.com/Mhmdabad/Lab.git
     targetRevision: main
     path: "gitops/argo cd/k8s"
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: nginx
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true

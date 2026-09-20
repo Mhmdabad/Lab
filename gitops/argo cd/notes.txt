@@ -6,4 +6,7 @@ kubectl create namespace argocd
 kubectl apply -n argocd --server-side --force-conflicts \
   -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-  
+kubectl apply -f project.yaml
+kubectl apply -f application.yaml
+(so fisrt we apply the project,then apply the aplications of this project)
+
