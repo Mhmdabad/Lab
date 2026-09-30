@@ -1,0 +1,4 @@
+username,password,expectedStatus
+emilys,emilyspass,200
+wronguser,password,400
+emilys,wrongpass,400
