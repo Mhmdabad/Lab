@@ -79,6 +79,94 @@
 			"item": [
 				{
 					"name": "all users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const usersResponse = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"pm.test(\"Users is an array\", () => {",
+									"    pm.expect(usersResponse.users).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Users list is not empty\", () => {",
+									"    pm.expect(usersResponse.users).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Every user has required fields\", () => {",
+									"    usersResponse.users.forEach(user => {",
+									"        pm.expect(user).to.have.property(\"id\");",
+									"        pm.expect(user).to.have.property(\"firstName\");",
+									"        pm.expect(user).to.have.property(\"email\");",
+									"    });",
+									"});",
+									"",
+									"const userListSchema = {",
+									"    type: \"object\",",
+									"    required: [\"users\", \"total\", \"skip\", \"limit\"],",
+									"    properties: {",
+									"        users: {",
+									"            type: \"array\",",
+									"            items: {",
+									"                type: \"object\",",
+									"                required: [",
+									"                    \"id\",",
+									"                    \"firstName\",",
+									"                    \"lastName\",",
+									"                    \"email\",",
+									"                    \"address\"",
+									"                ],",
+									"                properties: {",
+									"                    id: { type: \"number\" },",
+									"                    firstName: { type: \"string\" },",
+									"                    lastName: { type: \"string\" },",
+									"                    email: { type: \"string\" },",
+									"                    address: {",
+									"                        type: \"object\",",
+									"                        required: [",
+									"                            \"address\",",
+									"                            \"city\",",
+									"                            \"state\",",
+									"                            \"coordinates\"",
+									"                        ],",
+									"                        properties: {",
+									"                            address: { type: \"string\" },",
+									"                            city: { type: \"string\" },",
+									"                            state: { type: \"string\" },",
+									"                            coordinates: {",
+									"                                type: \"object\",",
+									"                                required: [\"lat\", \"lng\"],",
+									"                                properties: {",
+									"                                    lat: { type: \"number\" },",
+									"                                    lng: { type: \"number\" }",
+									"                                }",
+									"                            }",
+									"                        }",
+									"                    }",
+									"                }",
+									"            }",
+									"        },",
+									"        total: { type: \"number\" },",
+									"        skip: { type: \"number\" },",
+									"        limit: { type: \"number\" }",
+									"    }",
+									"};",
+									"",
+									"pm.test(\"Users response matches schema\", () => {",
+									"    pm.response.to.have.jsonSchema(userListSchema);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -99,6 +187,39 @@
 				},
 				{
 					"name": "1 user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const user = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"pm.test(\"Correct user returned\", () => {",
+									"    pm.expect(user.id).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"User has required fields\", () => {",
+									"    pm.expect(user).to.have.property(\"firstName\");",
+									"    pm.expect(user).to.have.property(\"lastName\");",
+									"    pm.expect(user).to.have.property(\"email\");",
+									"});",
+									"",
+									"pm.test(\"Field types are correct\", () => {",
+									"    pm.expect(user.id).to.be.a(\"number\");",
+									"    pm.expect(user.firstName).to.be.a(\"string\");",
+									"    pm.expect(user.email).to.be.a(\"string\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -122,6 +243,46 @@
 			"item": [
 				{
 					"name": "all carts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const cartsResponse = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"pm.test(\"Carts is an array\", () => {",
+									"    pm.expect(cartsResponse.carts).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Carts list is not empty\", () => {",
+									"    pm.expect(cartsResponse.carts).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Every cart has required fields\", () => {",
+									"    cartsResponse.carts.forEach(cart => {",
+									"        pm.expect(cart).to.have.property(\"id\");",
+									"        pm.expect(cart).to.have.property(\"products\");",
+									"        pm.expect(cart).to.have.property(\"total\");",
+									"        pm.expect(cart).to.have.property(\"userId\");",
+									"    });",
+									"});",
+									"",
+									"pm.test(\"Every cart has products array\", () => {",
+									"    cartsResponse.carts.forEach(cart => {",
+									"        pm.expect(cart.products).to.be.an(\"array\");",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "noauth"
