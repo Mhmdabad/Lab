@@ -166,11 +166,5 @@
 				]
 			}
 		}
-	],
-	"variable": [
-		{
-			"key": "baseUrl",
-			"value": ""
-		}
 	]
 }
