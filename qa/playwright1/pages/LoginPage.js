@@ -1,3 +1,5 @@
+import { expect } from "@playwright/test"
+
 export class login{
     constructor(page){
         this.page=page
@@ -9,11 +11,15 @@ export class login{
         await this.page.goto("https://practice.expandtesting.com/login")
     }
 
-    async login(username,password)
+    async login(username,password,loginSuccess)
     {
         await this.usernameInput.fill(username)
         await this.passwordInput.fill(password)
         await this.loginButton.click()
+        if(loginSuccess)
+        {
+            await expect()
+        }
     }
 
 }
