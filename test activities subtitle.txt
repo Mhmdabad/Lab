@@ -1,0 +1,872 @@
+Instructor: Test planning.
+
+We will discuss test planning and control
+
+in the test management section,
+
+but for now, the test planning is where we
+
+define the objectives of testing,
+
+decide what to test,
+
+who will do the testing,
+
+how they will do the testing,
+
+define the specific test activities to meet the objectives,
+
+define when we can consider the testing complete,
+
+which is called the exit criteria.
+
+When we reach the exit criteria, we will stop testing
+
+and raise a report to the stakeholders
+
+to decide if testing was enough.
+
+All these are within constraints imposed
+
+by the context of the project.
+
+Test plans may be revisited based on feedback
+
+from monitoring and control activities.
+
+
+Instructor: Test monitoring and control.
+
+We will also talk more about test monitoring
+
+and control in the Test Management section,
+
+but for now, you need to know
+
+that test monitoring is the ongoing activity
+
+of comparing actual progress against the test plan
+
+using any test monitoring metrics defined in the test plan.
+
+Suppose there is deviations
+
+between what's actually happening from the plan.
+
+In that case, we should control the testing activity
+
+by taking any necessary actions to stay on track
+
+to meet the target objectives.
+
+Therefore, we need to consider both planning
+
+and control throughout the testing activities.
+
+Remember the exit criteria that were defined
+
+during test planning?
+
+Well, during test monitoring
+
+and control, we should always evaluate the exit criteria
+
+to see if we have met the exit criteria or not.
+
+Evaluating the exit criteria is the activity
+
+where test execution results are assessed against
+
+the defined objectives.
+
+We will talk more about the exit criteria
+
+in the test management section, but for now, the evaluation
+
+of exit criteria for test execution may include:
+
+checking test results and logs against specified coverage
+
+criteria, assessing the level of the component
+
+or system quality based on test results
+
+and logs, determining if more tests are needed.
+
+For example, if tests originally intended
+
+to achieve a certain level of product risk coverage failed
+
+to do so, requiring additional tests
+
+to be written and executed.
+
+Test progress against that plan
+
+and the stats of the exit criteria are communicated
+
+to stakeholders in test progress reports,
+
+including deviations from the plan
+
+and information to support any decision to stop testing.
+
+The test manager will then evaluate the test reports
+
+submitted by various testers,
+
+and accordingly, we'll decide if we should stop testing
+
+or if testing in a specific area should continue or not.
+
+For example, if the criteria
+
+was that software performance speed
+
+is eight seconds per webpage transaction,
+
+then if the speed is 10 seconds,
+
+meaning the criteria is not met,
+
+there are two possible actions in that case.
+
+Most likely one is to employ extra testing activities
+
+till we achieve the desired performance.
+
+The least likely is to change the exit criteria,
+
+which will require approval from the key stakeholders.
+
+In agile life cycles,
+
+the exit criteria map to what we call the definition
+
+of done or DOD.
+
+Again, we will talk more about test monitoring
+
+and control in the test management section.
+
+Test analysis is concerned with the fine detail of knowing
+
+what to test and breaking it into fine, testable elements
+
+that we call test conditions.
+
+It is the activity
+
+during which general testing objectives are transformed
+
+into real test conditions.
+
+During test analysis, any information
+
+or documentation we have is analyzed
+
+to identify testable features
+
+and define associated test conditions.
+
+One term we need to learn is test basis.
+
+Test basis is any documentation that we can use
+
+as a reference or base to know what to test.
+
+We will talk more about the test basis
+
+in the following section.
+
+Test analysis include the following major activities.
+
+Analyzing and understanding any documentation we will use
+
+for testing and to ensure its testability.
+
+Examples of test basis include: requirement specifications,
+
+such as business requirements, functional requirements,
+
+system requirements, user stories, epics, use cases,
+
+or similar work products that specify desired functional
+
+and non-functional component or system behavior.
+
+Design and implementation information, such as system
+
+or software architecture, diagrams
+
+or documents, design specifications, call flow graphs,
+
+modeling diagrams, for example, UML
+
+or entity-relationship diagrams, interface specifications
+
+or similar work products
+
+that specify component or system structure.
+
+The implementation of the component
+
+or system itself, including code, database metadata,
+
+and queries and interfaces.
+
+Risk analysis reports list all the items in the software
+
+that are risky and require more attention from us.
+
+Risky analysis report may consider functional,
+
+non-functional and structural aspects
+
+of the component or system.
+
+All those are examples of test basis.
+
+While we are analyzing the test basis,
+
+it'll be a very good opportunity to evaluate test basis
+
+and test items to identify the effects of various types,
+
+such as ambiguities.
+
+Something is as confusing to the reader
+
+and might be interpreted differently by different people.
+
+Omissions, something is not mentioned.
+
+Inconsistencies, something that was mentioned
+
+in a way somewhere,
+
+but also mentioned differently somewhere else.
+
+Inaccuracies, something is not accurate.
+
+Contradictions, a contradiction
+
+between two statements is a stronger kind
+
+of inconsistency between them.
+
+If two sentences are contradictory, then one must be true
+
+and one must be false.
+
+Still if they are inconsistent, then both could be false.
+
+Superfluous statements, unnecessary statements
+
+that add nothing to the meaning.
+
+Actually, it's a skill to read a document
+
+and find its defects.
+
+Not everyone can do it.
+
+It's a skill, but it's also a science that can be taught,
+
+so I should consider making a course about it,
+
+but I need to see students like you actually asking for it.
+
+It should be called requirements testing.
+
+Identifying the facts
+
+during test analysis is a significant potential benefit,
+
+especially where no other review process is being used,
+
+and, or the test process is closely connected
+
+with the review process.
+
+Let's continue with the major test analysis activities.
+
+After analyzing, understanding,
+
+and evaluating the test basis, we should be able
+
+to identify the features and sets of features to be tested.
+
+Then, we should be able to define
+
+and prioritize the test conditions
+
+for each feature based on analysis of the test basis
+
+and considering functional, non-functional
+
+and structural characteristics, other business
+
+and technical factors and levels of risks.
+
+Finally, we should be able
+
+to capture bi-directional traceability between each element
+
+of the test basis and associated test conditions.
+
+Traceability here means that we need to ensure
+
+that we have test conditions
+
+for all the features we decided to test.
+
+Of course, we should do everything we can
+
+to reduce the likelihood
+
+of omitting necessary test conditions
+
+and defining more precise and accurate test conditions.
+
+Techniques like black-box, white-box,
+
+and experience-based test techniques can be useful
+
+in the process of test analysis.
+
+We'll talk about those test techniques
+
+in the test analysis and design section.
+
+Such test analysis activity does not only verify
+
+whether the requirements are consistent,
+
+adequately expressed and complete, but also validate
+
+whether the requirements accurately capture customer, user,
+
+and other stakeholders' needs.
+
+In some cases, test analysis produces test conditions
+
+that are used as test objectives in test charters.
+
+Test charters are typical work products in some types
+
+of experience-based testing.
+
+When these test objectives are traceable
+
+to the test basis, coverage achieved
+
+during such experience-based testing can be measured.
+
+During test design,
+
+the test conditions are elaborated
+
+into high-level test cases,
+
+sets of high-level test cases, and other testware.
+
+So test analysis answers the question what to test,
+
+while test design answers the question how to test.
+
+Test design includes the following major activities.
+
+Designing and prioritizing test cases
+
+and sets of test cases.
+
+That's the elaboration of test conditions
+
+into test cases and sets of test cases
+
+during test design.
+
+Often involves using test techniques,
+
+as we will discuss in a later section.
+
+Identifying necessary test data
+
+to support test conditions and test cases.
+
+For example, here, we decide what data
+
+we should use to test the test condition
+
+and how to combine test conditions
+
+so that a small number of test cases
+
+can cover as many test conditions as possible.
+
+Designing the test environment
+
+and identifying any required infrastructure and tools.
+
+Finally, and again,
+
+we need to capture bidirectional traceability
+
+between the test basis, test conditions, test cases,
+
+and test procedures.
+
+Test design may also identify similar types of defects
+
+on a test basis,
+
+as with test analysis,
+
+which, as we have said before,
+
+is a significant potential benefit.
+
+The test where necessary for test execution
+
+is created and/or completed during test implementation,
+
+including sequencing the test cases into test procedures.
+
+So test design answers the question: How to test?
+
+While test implementation answers the question:
+
+Do we now have everything in place to run the tests?
+
+Test implementation includes the following major activities.
+
+Developing and prioritizing test procedures
+
+and, potentially, creating automated test scripts.
+
+Creating test suites from the test procedures
+
+and automated test scripts, if any.
+
+Arranging the test suits within a test execution schedule
+
+in a way that results in efficient test execution.
+
+We'll talk more about the management aspect of everything,
+
+including test scheduling in the Test Management section.
+
+Building the test environment,
+
+and sometimes it is hard to build a test environment
+
+similar to what the customer has.
+
+So in that case, we might also need to build simulators,
+
+service virtualization,
+
+and other infrastructure items like test harnesses.
+
+We will talk about test harnesses in the next section.
+
+After all, we need to verify that everything needed
+
+has been set up correctly.
+
+And as we have said,
+
+we need to prepare and implement test data
+
+and to ensure it is properly loaded in the test environment.
+
+Last, and again,
+
+verifying and updating bidirectional traceability
+
+between the test basis, test conditions, test cases,
+
+test procedures, and test suites.
+
+The syllabus says that test design
+
+and test implementation tasks are often combined.
+
+Actually, I would say the same thing
+
+about test analysis as well.
+
+This is an important point here.
+
+In simple words,
+
+it means that we don't have strict borders
+
+between test analysis, test design,
+
+and test implementation in real life.
+
+Many times, you would be doing the three of them
+
+simultaneously.
+
+I'll explain more.
+
+So far, we said that we create test conditions
+
+during test analysis,
+
+create test cases during test design,
+
+and create or implement test procedures
+
+during test implementation.
+
+Now, think about it.
+
+If you created the before 20 range test condition
+
+during your test analysis,
+
+you thought that 10 would be good data to use
+
+as an input for that test condition.
+
+Would you say, "No, I'm in the test analysis right now
+
+and I shouldn't create test cases."
+
+Of course not.
+
+You simply create what you can while doing the analysis,
+
+design, or implementation.
+
+So really you use all the information you have now
+
+and don't really think if you're in test analysis,
+
+test design, or test implementation.
+
+But for the exam,
+
+yes, we say we create test condition during test analysis.
+
+Those test conditions grow into test cases
+
+during test design,
+
+and we put the steps to create the test procedures
+
+during test implementation.
+
+Another similar point is when we ask:
+
+When do we create test data?
+
+We know that data should be created along with test cases.
+
+Test cases cannot be test cases without data.
+
+But if we, for example,
+
+decided that we need a file of data
+
+to use with our test cases,
+
+then we designed the test data in the test design stage,
+
+but we create the file containing such data
+
+in the test implementation stage.
+
+During test execution, test suites are run
+
+following the test execution schedule.
+
+As tests are run, their outcome is the actual results
+
+that need to be logged and compared to the expected results.
+
+Whenever there is a discrepancy
+
+or difference between the expected
+
+and actual results, a test defect report,
+
+or as we call it, a bug report, should be raised
+
+to trigger an investigation.
+
+Test execution includes the following major activities.
+
+Keeping a log of testing activities,
+
+including the outcome, pass or fail,
+
+and the versions of software, data, and tools
+
+while recording the IDs and versions of the test items
+
+or test object, test tools, and testware
+
+we used in running the tests.
+
+Running test cases in the determined order manually
+
+or using test automation tools.
+
+Comparing actual results with expected results.
+
+Analyzing anomalies to establish their likely causes.
+
+Anomalies are when there is a difference
+
+between actual and expected results.
+
+As we have said before, not every variance
+
+between actual and expected results is a bug.
+
+Yes, some anomalies or failures may occur
+
+due to defects in the code,
+
+but false positives also may occur.
+
+I've mentioned false positives before, remember?
+
+Reporting defects based on the failures observed
+
+with as much information as possible
+
+and communicating them to the developer
+
+to try and fix them.
+
+After fixing the bug, we need to retest
+
+or repeat test activities
+
+to confirm that the bug was actually fixed,
+
+which is called confirmation testing.
+
+Also, we need to make sure that the new fix
+
+didn't unintentionally introduce new bugs
+
+in areas already working,
+
+which is called regression testing.
+
+Verifying and updating bidirectional traceability
+
+between the test basis, test conditions,
+
+test cases, test procedures, and test results.
+
+The syllabus mentioned in the test execution
+
+can take many forms, including continuous testing
+
+or pair testing sessions.
+
+Let me elaborate on that quickly.
+
+Continuous testing.
+
+Continuous testing is an approach
+
+where testing activities are integrated seamlessly
+
+into the software development and delivery pipeline.
+
+It involves running tests continuously
+
+throughout the software development lifecycle
+
+from the early stage of development to production.
+
+Key characteristics of continuous testing
+
+include automation, continuous integration,
+
+and continuous delivery practices.
+
+Automated test suites are executed whenever
+
+a new code is integrated,
+
+and results are immediately available
+
+to the development team.
+
+Continuous testing helps identify issues
+
+early in the development process,
+
+reducing the likelihood of defects reaching production.
+
+It ensures that testing is an ongoing
+
+and integral part of the development cycle.
+
+Peer testing sessions.
+
+Peer testing sessions is a collaborative testing approach
+
+where two testers work together to test
+
+a particular aspect of the software.
+
+This could involve one tester executing the test
+
+while the other observes, reviews the test cases,
+
+and provides feedback.
+
+Pair testing can involve various combinations
+
+of team members, such as a tester paired
+
+with a developer or another tester.
+
+The goal is to bring different perspectives
+
+and skills to the testing process.
+
+During pair testing sessions,
+
+testers can exchange knowledge, identified defects
+
+more effectively, and share ideas and insights.
+
+It often leads to better test coverage
+
+and improved test quality.
+
+Pair testing can be especially valuable
+
+when testing complex or critical parts of the software
+
+as it encourages teamwork and helps in finding defects
+
+from multiple viewpoints.
+
+-: Test completion.
+
+Test completion activities occur at project milestones such
+
+as when a software system is released,
+
+a test project is completed or canceled,
+
+a milestone has been achieved,
+
+an Agile project iteration is finished,
+
+a test level is completed,
+
+or a maintenance release has been completed.
+
+Test completion activities collect data
+
+from completed test activities to consolidate experience,
+
+testware, and any other relevant information.
+
+Test completion activities ensure
+
+that everything is finalized, synchronized, and documented,
+
+reports written, defects closed,
+
+and those defects deferred
+
+for another phase are clearly flagged as such.
+
+Test completion includes the following major activities.
+
+Checking which planned deliverables have been delivered.
+
+Ensuring that the documentation is in order.
+
+Checking whether all defect reports are closed,
+
+entering change requests
+
+or product backlog items for any defects
+
+that remain unresolved at the end of the test execution.
+
+Creating a test summary report
+
+to be communicated to stakeholders.
+
+Finalizing and archiving the test environment,
+
+the test data, the test infrastructure,
+
+and other testware for later reuse.
+
+Make sure that we delete any confidential data.
+
+Handling over the testware to the maintenance teams,
+
+other project teams,
+
+and/or other stakeholders who could benefit from its use.
+
+Analyzing lessons learned from the completed test activities
+
+to determine changes needed for future iterations,
+
+releases, and projects.
+
+Using the information gathered
+
+to improve test process maturity.
+
+Now that we've learned about activity groups
+
+of the test process,
+
+let me repeat that although the main activities
+
+in the test process are in sequence,
+
+they can be considered more
+
+of an iterative nature rather than a sequential one,
+
+as an earlier activity may need
+
+to be revisited according to the circumstances.
+
+For example, according to the test report results,
+
+we might need to replan the testing activity
+
+to add more time to the testing activity.
+
+A defect may force us to revisit the analysis
+
+and design process to create more detailed test cases.
+
+If we find the defect that a piece
+
+of the requirements is missing may lead us
+
+to revisit plan and control to allocate time
+
+and resources for the newly added functionality.
+
+Moreover, we sometimes need to do two or more
+
+of the main activities in parallel.
+
+Time pressure can mean that we begin test execution
+
+before all tests have been designed.

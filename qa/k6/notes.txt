@@ -1,0 +1,7 @@
+to run the file on 5 users with 30 iterations:
+k6 run --vus 5 --iterations 20 test.js
+
+to run the file on 5 users for 3 seconds:
+k6 run --vus 10 --duration 30s test.js
+
+or we can add the settings in the options in the code and run k6 run test.js
