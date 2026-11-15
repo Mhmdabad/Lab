@@ -52,4 +52,28 @@ test.describe("automationexercise site",()=>{
      await expect(page.getByText('ACCOUNT DELETED!')).toBeVisible()   })
 
 
+
+     test('Login User with incorrect email and password',async ({page})=>{
+      await page.goto("https://automationexercise.com/")
+      await expect(page).toHaveURL('https://automationexercise.com/')
+      await page.getByRole("link",{name: ' Signup / Login'}).click()
+      await expect(page.getByText('Login to your account')).toBeVisible()
+      await page.locator('[data-qa="login-email"]').fill("wrongusername123@wrong.com")
+      await page.locator('[data-qa="login-password"]').fill("wrongpassword")
+      await page.locator('[data-qa="login-button"]').click()
+      await expect(page.getByText('Your email or password is incorrect!')).toBeVisible()
+
+     })
+     test('Logout User',async({page})=>{
+      await page.goto('https://automationexercise.com/')
+      await expect(page).toHaveURL('https://automationexercise.com/')
+      await page.getByRole("link",{name: ' Signup / Login'}).click()
+      await expect(page.getByText('Login to your account')).toBeVisible()
+      await page.locator('[data-qa="login-email"]').fill("validemail@valid.com")
+      await page.locator('[data-qa="login-password"]').fill("validpassword")
+      await page.locator('[data-qa="login-button"]').click()
+      await expect(page.getByText('Logged in as username')).toBeVisible()
+      await page.getByRole('link',{name:'Logout'}).click()
+      await expect(page).toHaveURL('https://automationexercise.com/login')
+     })
 })
